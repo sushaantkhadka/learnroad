@@ -14,12 +14,12 @@ export default function Table({ data }) {
                                 <Image alt={student.avatar} src={student.avatar} width={100} height={100} className='rounded-full w-[200px] h-[200px]' />
                                 <div className='flex flex-col gap-6'>
                                     <div>
-                                    <h2 className='text-[32px] font-bold'>{student.name}</h2>
+                                    <h2 className='text-[32px] font-bold'>{student.fullName}</h2>
                                     <p className='text-gray-400'>{student.email}</p>
                                     </div>
                                     <p>{student.desc}</p>
                                     <Link href={`/student/${student.id}`} >
-                                    <button>Edit</button>
+                                    <button className='bg-green-500 px-6 py-2 rounded-md'>Edit</button>
                                     </Link>
                                 </div>
                             </div>
