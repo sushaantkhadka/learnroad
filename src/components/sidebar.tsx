@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { BookOpen, Calendar, User, Settings, LogOut, Edit } from "lucide-react"
+import { BookOpen, Calendar, User, Settings, LogOut, Edit, MessageSquare } from "lucide-react"
 import { useSession, signOut } from "next-auth/react"
 
 const sidebarNavItems = [
@@ -18,6 +18,11 @@ const sidebarNavItems = [
     title: "Sessions",
     href: "/dashboard/sessions",
     icon: Calendar,
+  },
+  {
+    title: "Messages",
+    href: "/dashboard/messages",
+    icon: MessageSquare,
   },
   {
     title: "Profile",

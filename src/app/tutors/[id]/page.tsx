@@ -163,9 +163,9 @@ export default function TutorProfilePage() {
             <div className="flex flex-col gap-4">
               <Dialog open={bookingDialogOpen} onOpenChange={setBookingDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button size="lg">Book a Session</Button>
+                  <Button size="lg" className="bg-blue-500 text-white">Book a Session</Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="bg-white">
                   <DialogHeader>
                     <DialogTitle>Book a Session with {tutor.name}</DialogTitle>
                   </DialogHeader>
