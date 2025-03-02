@@ -4,6 +4,8 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import connectDB from "@/lib/db"
 import Message from "@/models/message"
 import User from "@/models/user"
+import { writeFile } from "fs/promises"
+import { join } from "path"
 
 export async function GET(req: Request) {
   try {
@@ -29,7 +31,6 @@ export async function GET(req: Request) {
       ],
     }).sort({ timestamp: 1 })
 
-    // Fetch sender and receiver names
     const userIds = new Set(messages.flatMap((m) => [m.senderId, m.receiverId]))
     const users = await User.find({ _id: { $in: Array.from(userIds) } })
     const userMap = new Map(users.map((u) => [u._id.toString(), u.name]))
@@ -51,16 +52,35 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session) {
+    if (!session || session.user.role !== "tutor") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     await connectDB()
 
-    const { receiverId, content } = await req.json()
+    const formData = await req.formData()
+    const receiverId = formData.get("receiverId") as string
+    const content = formData.get("content") as string
+    const file = formData.get("file") as File | null
 
     if (!receiverId || !content) {
       return NextResponse.json({ error: "Recipient ID and content are required" }, { status: 400 })
+    }
+
+    let fileUrl, fileName, fileType
+
+    if (file) {
+      const bytes = await file.arrayBuffer()
+      const buffer = Buffer.from(bytes)
+
+      const uploadDir = join(process.cwd(), "public", "uploads")
+      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`
+      fileName = `${file.name.split(".")[0]}-${uniqueSuffix}.${file.name.split(".").pop()}`
+      const filePath = join(uploadDir, fileName)
+
+      await writeFile(filePath, buffer)
+      fileUrl = `/uploads/${fileName}`
+      fileType = file.type
     }
 
     const newMessage = await Message.create({
@@ -68,9 +88,11 @@ export async function POST(req: Request) {
       receiverId,
       content,
       timestamp: new Date(),
+      fileUrl,
+      fileName,
+      fileType,
     })
 
-    // Fetch sender and receiver names
     const [sender, receiver] = await Promise.all([User.findById(session.user.id), User.findById(receiverId)])
 
     const messageWithNames = {

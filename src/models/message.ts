@@ -5,6 +5,9 @@ export interface IMessage extends Document {
   receiverId: string
   content: string
   timestamp: Date
+  fileUrl?: string
+  fileName?: string
+  fileType?: string
 }
 
 const MessageSchema = new Schema<IMessage>({
@@ -23,6 +26,15 @@ const MessageSchema = new Schema<IMessage>({
   timestamp: {
     type: Date,
     default: Date.now,
+  },
+  fileUrl: {
+    type: String,
+  },
+  fileName: {
+    type: String,
+  },
+  fileType: {
+    type: String,
   },
 })
 
